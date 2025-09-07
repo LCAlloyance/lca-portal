@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/LCAlloyance/lca-portal.git/static/css/main.0fb6ef1a.css",
+    "main.js": "/LCAlloyance/lca-portal.git/static/js/main.9c8967e7.js",
+    "static/js/453.453f2ef2.chunk.js": "/LCAlloyance/lca-portal.git/static/js/453.453f2ef2.chunk.js",
+    "index.html": "/LCAlloyance/lca-portal.git/index.html",
+    "main.0fb6ef1a.css.map": "/LCAlloyance/lca-portal.git/static/css/main.0fb6ef1a.css.map",
+    "main.9c8967e7.js.map": "/LCAlloyance/lca-portal.git/static/js/main.9c8967e7.js.map",
+    "453.453f2ef2.chunk.js.map": "/LCAlloyance/lca-portal.git/static/js/453.453f2ef2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0fb6ef1a.css",
+    "static/js/main.9c8967e7.js"
+  ]
+}
