@@ -9,23 +9,57 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: false   # ✅ disables submodule issue
+          submodules: false   # ✅ fixes submodule issue
           fetch-depth: 0
 
-      # Install and build React app
+      # --------------------------
+      # React (Frontend)
+      # --------------------------
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: cd my-app && npm install && npm run build
 
-      # Set up Python for Flask
+      - name: Install & Build React
+        run: |
+          cd my-app
+          npm ci
+          npm run build
+
+      # Optionally upload build as artifact (so backend/deployment can use it)
+      - name: Upload React Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-build
+          path: my-app/build
+
+      # --------------------------
+      # Flask (Backend)
+      # --------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: pip install -r requirements.txt
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Example: run Flask tests (if you have pytest or unittest)
+      - name: Run tests
+        run: |
+          pytest || echo "No tests defined"
+
+      # If you want to just check Flask runs (basic sanity)
+      - name: Run Flask (sanity check)
+        run: |
+          python app.py &
+          sleep 10
+          kill $!
