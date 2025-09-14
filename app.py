@@ -10,10 +10,12 @@ import os
 def create_app() -> Flask:
     # Point Flask to React build folder (dist from Vite)
     app = Flask(
-        __name__,
-        static_folder=os.path.join(os.path.dirname(__file__), "../frontend/dist"),
-        static_url_path="/"
-    )
+    __name__,
+    static_folder=os.path.join(os.path.dirname(__file__), "my-app/build"),
+    static_url_path="/"
+)
+
+    
 
     # Allow CORS for API routes (useful in dev; not really needed once Flask serves frontend)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -173,6 +175,7 @@ def create_app() -> Flask:
         return send_from_directory(app.static_folder, "index.html")
 
     return app
+
 
 
 app = create_app()
