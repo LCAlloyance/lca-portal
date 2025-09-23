@@ -172,4 +172,6 @@ async def not_found(request: Request, exc: HTTPException):
         with open(index_file, "r", encoding="utf-8") as f:
             return HTMLResponse(f.read())
     return JSONResponse({"error": "Not found"}, status_code=404)
-
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
