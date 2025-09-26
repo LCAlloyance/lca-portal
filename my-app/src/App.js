@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import LoginPage from "./components/LoginPage";
+
+import { useState, useEffect } from "react";
 import apiService from "./services/api";
 import {
   BarChart,
@@ -46,6 +50,10 @@ import {
 } from "lucide-react";
 
 const CircularMetalsPlatform = () => {
+  const { logout, user } = useAuth();
+  //new added
+
+  //
   const [activeTab, setActiveTab] = useState("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [processData, setProcessData] = useState({
@@ -67,11 +75,12 @@ const CircularMetalsPlatform = () => {
   });
   const [apiStatus, setApiStatus] = useState("connecting");
 
+  // Check API health on component mount (only when logged in)
   // Check API health on component mount
   useEffect(() => {
     checkApiHealth();
     loadDashboardData();
-  }, []);
+  }, []); // ✅ Just run once when component mounts
 
   const checkApiHealth = async () => {
     try {
@@ -303,9 +312,7 @@ const CircularMetalsPlatform = () => {
             <h1 className="text-2xl font-bold text-white tracking-tight">
               ALLOYANCE
             </h1>
-            <p className="text-xs text-white/80 font-medium">
-              LCA Platform
-            </p>
+            <p className="text-xs text-white/80 font-medium">LCA Platform</p>
           </div>
         </div>
         <button
@@ -413,10 +420,19 @@ const CircularMetalsPlatform = () => {
                   : "bg-orange-500"
               }`}
             ></div>
-            <span className="text-emerald-700 text-sm font-medium">
+            <span className="text-emerald-700 text-sm font-medium mr-2">
               {apiStatus === "connected" ? "Connected" : "Demo Mode"}
             </span>
+            <span className="text-emerald-600 text-sm">• {user?.email}</span>
           </div>
+
+          <button
+            onClick={logout} // Use the logout from auth context
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl transition-colors text-sm font-medium"
+          >
+            Logout
+          </button>
+
           <button
             onClick={exportReport}
             className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-6 py-2 rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all duration-300 shadow-lg hover:shadow-slate-500/25 transform hover:scale-105 flex items-center space-x-2"
@@ -487,15 +503,11 @@ const CircularMetalsPlatform = () => {
                   <div className="text-slate-300 text-sm">Accuracy Rate</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
-                  <div className="text-3xl font-bold text-teal-400 mb-2">
-                    -
-                  </div>
+                  <div className="text-3xl font-bold text-teal-400 mb-2">-</div>
                   <div className="text-slate-300 text-sm">CO₂ Reduction</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
-                  <div className="text-3xl font-bold text-cyan-400 mb-2">
-                    -
-                  </div>
+                  <div className="text-3xl font-bold text-cyan-400 mb-2">-</div>
                   <div className="text-slate-300 text-sm">Assessments</div>
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
@@ -645,9 +657,7 @@ const CircularMetalsPlatform = () => {
       <div className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold mb-6">
-              Why Choose ALLOYANCE
-            </h2>
+            <h2 className="text-4xl font-bold mb-6">Why Choose ALLOYANCE</h2>
             <p className="text-xl text-slate-300">
               Transforming metal industry sustainability with proven results
             </p>
@@ -664,7 +674,7 @@ const CircularMetalsPlatform = () => {
               <h3 className="text-2xl font-bold mb-4">Global Standards</h3>
               <p className="text-slate-300 leading-relaxed">
                 ISO 14040/14044 compliant assessments meeting international
-                environmental requiremnets and standards 
+                environmental requiremnets and standards
               </p>
             </div>
 
@@ -734,7 +744,8 @@ const CircularMetalsPlatform = () => {
       </div>
     </div>
   );
-
+  /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*Analytics Dashboard View */
   const DashboardView = () => (
     <div className="p-6 space-y-8">
       {/* Enhanced Key Metrics Cards */}
@@ -2151,5 +2162,34 @@ const CircularMetalsPlatform = () => {
     </div>
   );
 };
+// New App component that handles authentication
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
+};
 
-export default CircularMetalsPlatform;
+// Component that decides whether to show login or main app
+const AppRouter = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-4 shadow-lg">
+            <Recycle className="w-8 h-8 text-white animate-spin" />
+          </div>
+          <p className="text-slate-600 font-medium">Loading ALLOYANCE...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login page if not authenticated, otherwise show main app
+  return isAuthenticated ? <CircularMetalsPlatform /> : <LoginPage />;
+};
+
+export default App;
